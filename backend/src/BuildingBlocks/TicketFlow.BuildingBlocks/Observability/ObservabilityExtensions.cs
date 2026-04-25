@@ -13,18 +13,46 @@ namespace TicketFlow.BuildingBlocks.Observability;
 
 public static class ObservabilityExtensions
 {
-    private static void ApplyOtlpExporterOptions(OtlpExporterOptions options, IConfiguration configuration)
+    private enum OtlpSignal
     {
-        var raw = configuration["Otlp:Endpoint"]
-            ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT");
+        Traces,
+        Metrics
+    }
+
+    private static void ApplyOtlpExporterOptions(OtlpExporterOptions options, IConfiguration configuration, OtlpSignal signal)
+    {
+        var raw = signal == OtlpSignal.Traces
+            ? (configuration["OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"]
+               ?? configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+               ?? configuration["Otlp:Endpoint"])
+            : (configuration["OTEL_EXPORTER_OTLP_METRICS_ENDPOINT"]
+               ?? configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+               ?? configuration["Otlp:Endpoint"]);
+
         if (string.IsNullOrWhiteSpace(raw))
             raw = "http://localhost:4317";
         var uri = new Uri(raw);
-        options.Endpoint = uri;
 
         var protocolRaw = configuration["Otlp:Protocol"]
             ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_PROTOCOL");
-        options.Protocol = ResolveOtlpProtocol(protocolRaw, uri.Port);
+        var protocol = ResolveOtlpProtocol(protocolRaw, uri.Port);
+        options.Protocol = protocol;
+        // HttpProtobuf: setting only host:port does not get /v1/traces|metrics appended; Jaeger would get wrong POST path.
+        options.Endpoint = EnsureOtlpHttpProtobufResourcePath(uri, protocol, signal);
+    }
+
+    private static Uri EnsureOtlpHttpProtobufResourcePath(Uri uri, OtlpExportProtocol protocol, OtlpSignal signal)
+    {
+        if (protocol != OtlpExportProtocol.HttpProtobuf)
+            return uri;
+
+        var path = uri.AbsolutePath.TrimEnd('/');
+        if (path.Length > 0 && path.Contains("v1", StringComparison.Ordinal))
+            return uri;
+
+        var root = new UriBuilder(uri) { Path = "/" }.Uri;
+        var relative = signal == OtlpSignal.Traces ? "v1/traces" : "v1/metrics";
+        return new Uri(root, relative);
     }
 
     private static OtlpExportProtocol ResolveOtlpProtocol(string? protocolRaw, int port)
@@ -54,16 +82,17 @@ public static class ObservabilityExtensions
             .WithTracing(tracing =>
             {
                 tracing
+                    .SetSampler(new AlwaysOnSampler())
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddOtlpExporter(options => ApplyOtlpExporterOptions(options, builder.Configuration));
+                    .AddOtlpExporter(options => ApplyOtlpExporterOptions(options, builder.Configuration, OtlpSignal.Traces));
             })
             .WithMetrics(metrics =>
             {
                 metrics
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddOtlpExporter(options => ApplyOtlpExporterOptions(options, builder.Configuration));
+                    .AddOtlpExporter(options => ApplyOtlpExporterOptions(options, builder.Configuration, OtlpSignal.Metrics));
             });
 
         return builder;
