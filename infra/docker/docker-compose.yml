@@ -104,6 +104,7 @@ services:
     ports:
       - "16686:16686"
       - "4317:4317"
+      - "4318:4318"
 
   identity-service:
     build:
@@ -119,9 +120,9 @@ services:
       Kafka__SaslPassword: ${KAFKA_CLIENT_PASSWORDS}
       Redis__LoginRequestsPerMinute: "1000000"
       Redis__RegisterRequestsPerMinute: "1000000"
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      Otlp__Endpoint: http://jaeger:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      Otlp__Endpoint: http://jaeger:4318
       Seq__ServerUrl: http://seq:80
     depends_on:
       postgres:
@@ -151,9 +152,9 @@ services:
       Kafka__BootstrapServers: kafka:9092
       Kafka__SaslUsername: ${KAFKA_CLIENT_USERS}
       Kafka__SaslPassword: ${KAFKA_CLIENT_PASSWORDS}
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      Otlp__Endpoint: http://jaeger:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      Otlp__Endpoint: http://jaeger:4318
       Seq__ServerUrl: http://seq:80
     depends_on:
       postgres:
@@ -184,9 +185,9 @@ services:
       Kafka__BootstrapServers: kafka:9092
       Kafka__SaslUsername: ${KAFKA_CLIENT_USERS}
       Kafka__SaslPassword: ${KAFKA_CLIENT_PASSWORDS}
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      Otlp__Endpoint: http://jaeger:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      Otlp__Endpoint: http://jaeger:4318
       Seq__ServerUrl: http://seq:80
     depends_on:
       postgres:
@@ -215,9 +216,9 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-      Otlp__Endpoint: http://jaeger:4317
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      Otlp__Endpoint: http://jaeger:4318
       Seq__ServerUrl: http://seq:80
       RateLimiting__PermitLimit: "1000000"
       RateLimiting__QueueLimit: "100000"
