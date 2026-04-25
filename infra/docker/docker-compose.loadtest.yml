@@ -1,0 +1,19 @@
+# Overlay for intentional load testing.
+# Usage:
+# docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.loadtest.yml up -d --build
+
+name: ticketflow
+
+services:
+  identity-service:
+    environment:
+      - Redis__LoginRequestsPerMinute=100000
+      - Redis__RegisterRequestsPerMinute=100000
+
+  simulation-worker:
+    environment:
+      - Simulation__EnableLoadScenario=true
+      - Simulation__LoadUsers=120
+      - Simulation__LoadBatchSize=20
+      - Simulation__LoadParallelism=8
+      - Simulation__LoadBatchPauseSeconds=1

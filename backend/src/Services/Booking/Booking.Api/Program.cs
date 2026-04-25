@@ -3,6 +3,8 @@ using System.Text;
 using Booking.Api.Filters;
 using Booking.Application;
 using Booking.Infrastructure;
+using Booking.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TicketFlow.BuildingBlocks.Observability;
 using TicketFlow.BuildingBlocks.Web;
@@ -63,6 +65,12 @@ builder.Services.AddHealthChecks()
 
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<BookingDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

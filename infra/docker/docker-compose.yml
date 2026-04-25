@@ -39,7 +39,7 @@ services:
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CFG_LISTENERS: SASL_PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_CFG_ADVERTISED_LISTENERS: SASL_PLAINTEXT://localhost:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka:9092
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,SASL_PLAINTEXT:SASL_PLAINTEXT
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
       KAFKA_CFG_SASL_ENABLED_MECHANISMS: PLAIN
@@ -50,13 +50,37 @@ services:
       KAFKA_CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     volumes:
       - kafka_data:/bitnami
+    healthcheck:
+      test: ["CMD-SHELL", "bash -ec 'echo > /dev/tcp/127.0.0.1/9092'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  kafka-topic-init:
+    image: docker.io/bitnamilegacy/kafka:4.0.0-debian-12-r10
+    container_name: ticketflow-kafka-topic-init
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command:
+      - /bin/bash
+      - -ec
+      - |
+        cat >/tmp/client.properties <<EOF
+        security.protocol=SASL_PLAINTEXT
+        sasl.mechanism=PLAIN
+        sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="${KAFKA_CLIENT_USERS}" password="${KAFKA_CLIENT_PASSWORDS}";
+        EOF
+        /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --command-config /tmp/client.properties --create --if-not-exists --topic EventCancelledIntegrationEvent --partitions 1 --replication-factor 1
+    restart: "no"
 
   seq:
     image: datalust/seq:latest
     container_name: ticketflow-seq
     environment:
       ACCEPT_EULA: "Y"
-      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD:-ticketflow-seq-dev-change-me}
+      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD:?SEQ_ADMIN_PASSWORD .env içinde tanımlı olmalı}
     ports:
       - "5341:80"
     volumes:
@@ -83,6 +107,8 @@ services:
       - Kafka__BootstrapServers=kafka:9092
       - Kafka__SaslUsername=${KAFKA_CLIENT_USERS}
       - Kafka__SaslPassword=${KAFKA_CLIENT_PASSWORDS}
+      - Redis__LoginRequestsPerMinute=${IDENTITY_LOGIN_REQUESTS_PER_MINUTE:?IDENTITY_LOGIN_REQUESTS_PER_MINUTE .env içinde tanımlı olmalı}
+      - Redis__RegisterRequestsPerMinute=${IDENTITY_REGISTER_REQUESTS_PER_MINUTE:?IDENTITY_REGISTER_REQUESTS_PER_MINUTE .env içinde tanımlı olmalı}
       - Seq__ServerUrl=http://seq:80
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
@@ -106,11 +132,16 @@ services:
       - Seq__ServerUrl=http://seq:80
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
-      - postgres
-      - redis
-      - kafka
-      - seq
-      - jaeger
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      seq:
+        condition: service_started
+      jaeger:
+        condition: service_started
 
   booking-service:
     build:
@@ -128,11 +159,18 @@ services:
       - Seq__ServerUrl=http://seq:80
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
-      - postgres
-      - redis
-      - kafka
-      - seq
-      - jaeger
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+      kafka-topic-init:
+        condition: service_completed_successfully
+      seq:
+        condition: service_started
+      jaeger:
+        condition: service_started
 
   gateway:
     build:
@@ -168,13 +206,13 @@ services:
       - Simulation__EnableAdminScenario=true
       - Simulation__EnableBookingScenario=true
       - Simulation__EnableRaceScenario=true
-      - Simulation__EnableLoadScenario=false
+      - Simulation__EnableLoadScenario=${SIMULATION_ENABLE_LOAD_SCENARIO:?SIMULATION_ENABLE_LOAD_SCENARIO .env içinde tanımlı olmalı}
       - Simulation__NegativeScenarioRepeatCount=3
-      - Simulation__LoadUsers=80
-      - Simulation__LoadBatchSize=10
-      - Simulation__LoadParallelism=5
-      - Simulation__LoadBatchPauseSeconds=3
-      - Simulation__LoadRegisterRetryCount=3
+      - Simulation__LoadUsers=${SIMULATION_LOAD_USERS:?SIMULATION_LOAD_USERS .env içinde tanımlı olmalı}
+      - Simulation__LoadBatchSize=${SIMULATION_LOAD_BATCH_SIZE:?SIMULATION_LOAD_BATCH_SIZE .env içinde tanımlı olmalı}
+      - Simulation__LoadParallelism=${SIMULATION_LOAD_PARALLELISM:?SIMULATION_LOAD_PARALLELISM .env içinde tanımlı olmalı}
+      - Simulation__LoadBatchPauseSeconds=${SIMULATION_LOAD_BATCH_PAUSE_SECONDS:?SIMULATION_LOAD_BATCH_PAUSE_SECONDS .env içinde tanımlı olmalı}
+      - Simulation__LoadRegisterRetryCount=${SIMULATION_LOAD_REGISTER_RETRY_COUNT:?SIMULATION_LOAD_REGISTER_RETRY_COUNT .env içinde tanımlı olmalı}
     depends_on:
       - gateway
 

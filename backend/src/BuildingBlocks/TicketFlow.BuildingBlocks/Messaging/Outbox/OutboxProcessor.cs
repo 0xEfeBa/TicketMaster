@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +13,10 @@ public class OutboxProcessor<TContext>(
     ILogger<OutboxProcessor<TContext>> logger) 
     : BackgroundService where TContext : DbContext
 {
+    private static readonly MethodInfo PublishGenericMethod = typeof(IEventBus)
+        .GetMethods()
+        .Single(m => m.Name == nameof(IEventBus.PublishAsync) && m.IsGenericMethodDefinition);
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Outbox Processor for {ContextName} started", typeof(TContext).Name);
@@ -50,7 +55,14 @@ public class OutboxProcessor<TContext>(
                             var @event = JsonSerializer.Deserialize(message.Content, eventType) as IntegrationEvent;
                             if (@event != null)
                             {
-                                await eventBus.PublishAsync(@event, stoppingToken);
+                                // Preserve the concrete integration event type so topic naming stays deterministic.
+                                var publishMethod = PublishGenericMethod.MakeGenericMethod(eventType);
+                                var publishTask = (Task?)publishMethod.Invoke(eventBus, [@event, stoppingToken]);
+                                if (publishTask != null)
+                                {
+                                    await publishTask;
+                                }
+
                                 message.ProcessedOnUtc = DateTime.UtcNow;
                             }
                         }
