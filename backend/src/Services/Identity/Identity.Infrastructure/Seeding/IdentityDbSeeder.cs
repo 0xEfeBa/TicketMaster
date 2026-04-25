@@ -42,6 +42,6 @@ public static class IdentityDbSeeder
         });
 
         await db.SaveChangesAsync(cancellationToken);
-        logger.LogInformation("Seed admin oluşturuldu: {Email}", email);
+        logger.LogInformation("Seeded admin user: {Email}", email);
     }
 }

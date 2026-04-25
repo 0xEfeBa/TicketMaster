@@ -50,7 +50,7 @@ public class ReservationTests
         var act = () => reservation.Confirm(now);
 
         // Assert
-        act.Should().Throw<BookingDomainException>().WithMessage("*dolmuş*");
+        act.Should().Throw<BookingDomainException>().WithMessage("*expired*");
     }
 
     [Fact]

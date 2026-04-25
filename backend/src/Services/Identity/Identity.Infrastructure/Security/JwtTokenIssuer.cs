@@ -15,7 +15,7 @@ public class JwtTokenIssuer(IOptions<JwtOptions> options) : IJwtTokenIssuer
     public AccessTokenResult CreateAccessToken(User user)
     {
         if (string.IsNullOrWhiteSpace(_options.SigningKey))
-            throw new InvalidOperationException("Jwt:SigningKey yapılandırılmadı.");
+            throw new InvalidOperationException("Jwt:SigningKey is not configured.");
 
         var expiresInSeconds = Math.Max(60, _options.AccessTokenMinutes * 60);
         var expires = DateTime.UtcNow.AddSeconds(expiresInSeconds);

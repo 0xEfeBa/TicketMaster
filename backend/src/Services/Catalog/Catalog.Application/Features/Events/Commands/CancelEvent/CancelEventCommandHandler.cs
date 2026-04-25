@@ -24,15 +24,14 @@ public class CancelEventCommandHandler : IRequestHandler<CancelEventCommand, Uni
     {
         var @event = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
         if (@event is null)
-            throw new CatalogDomainException("Etkinlik bulunamadı.");
+            throw new CatalogDomainException("Event not found.");
 
         if (!request.RequestingUserIsAdmin && @event.OrganizerUserId != request.RequestingUserId)
-            throw new CatalogDomainException("Sadece etkinliğin sahibi veya Admin işlemi yapabilir.", isAccessDenied: true);
+            throw new CatalogDomainException("Only the event owner or an Admin can perform this action.", isAccessDenied: true);
 
         @event.Cancel();
         _eventRepository.Update(@event);
-        
-        // Transactional Outbox: Mesajı veritabanıyla aynı transaction içinde kaydediyoruz.
+
         await _eventOutbox.SaveAsync(new EventCancelledIntegrationEvent(@event.Id), cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -20,20 +20,17 @@ public class CreateHoldCommandHandler : IRequestHandler<CreateHoldCommand, Guid>
 
     public async Task<Guid> Handle(CreateHoldCommand request, CancellationToken cancellationToken)
     {
-        // 1. Senkron Doğrulama (Catalog Servisi ile)
         var validationResult = await _catalogClient.ValidateTicketTypeAsync(request.EventId, request.TicketTypeId, request.ReqBearerToken, cancellationToken);
         
         if (!validationResult.IsValid)
         {
-            throw new BookingDomainException($"Katalog doğrulama hatası: {validationResult.ErrorMessage}");
+            throw new BookingDomainException($"Catalog validation failed: {validationResult.ErrorMessage}");
         }
 
-        // 3. Geçici rezervasyon (Hold) oluştur (Örneğin: 10 dk süre verilir)
         var reservation = new Reservation(Guid.NewGuid(), request.UserId, request.EventId, TimeSpan.FromMinutes(10));
-        
+
         for(int i = 0; i < request.Quantity; i++)
         {
-            // Fiyatı Catalog'dan anlık alıp sabitliyoruz.
             reservation.AddTicket(Guid.NewGuid(), request.TicketTypeId, validationResult.Price);
         }
 

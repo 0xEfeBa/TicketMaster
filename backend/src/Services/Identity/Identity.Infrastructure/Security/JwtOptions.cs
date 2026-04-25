@@ -12,6 +12,5 @@ public class JwtOptions
 
     public int AccessTokenMinutes { get; set; } = 60;
 
-    /// <summary>Refresh token ömrü (gün).</summary>
     public int RefreshTokenDays { get; set; } = 14;
 }

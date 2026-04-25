@@ -19,13 +19,13 @@ public class PublishEventCommandHandler : IRequestHandler<PublishEventCommand, U
     {
         var @event = await _eventRepository.GetByIdWithDetailsAsync(request.EventId, cancellationToken);
         if (@event is null)
-            throw new CatalogDomainException("Etkinlik bulunamadı.");
+            throw new CatalogDomainException("Event not found.");
 
         if (!request.RequestingUserIsAdmin && @event.OrganizerUserId != request.RequestingUserId)
-            throw new CatalogDomainException("Sadece etkinliğin yetkili sahibi veya Admin işlemi yapabilir.", isAccessDenied: true);
+            throw new CatalogDomainException("Only the event owner or an Admin can perform this action.", isAccessDenied: true);
 
-        @event.Publish(); // Will throw Domain Exception if no tickets or sessions exist!
-        
+        @event.Publish();
+
         _eventRepository.Update(@event);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

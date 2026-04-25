@@ -15,7 +15,6 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
         builder.Property(e => e.Title).IsRequired().HasMaxLength(200);
         builder.Property(e => e.Venue).IsRequired().HasMaxLength(200);
         
-        // Optimistic Concurrency Token via xmin for PostgreSQL
         builder.Property(e => e.Version).IsRowVersion();
 
         builder.HasMany(e => e.Sessions)

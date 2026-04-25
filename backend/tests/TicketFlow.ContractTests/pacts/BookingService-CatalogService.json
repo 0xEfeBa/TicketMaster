@@ -13,33 +13,33 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/api/v1/events/249ac052-2c61-4d78-9651-45479b90681c"
+        "path": "/api/v1/events/c39cdb81-8e30-421d-80cc-40401a2240d4"
       },
       "response": {
         "body": {
           "content": {
-            "description": "Örnek açıklama",
-            "id": "249ac052-2c61-4d78-9651-45479b90681c",
+            "description": "Sample description",
+            "id": "c39cdb81-8e30-421d-80cc-40401a2240d4",
             "imageUrl": null,
-            "organizerUserId": "c5b6919e-965c-4be7-8800-060da887914d",
+            "organizerUserId": "afdf0af9-19ec-4d5e-9e51-45af51eb1db8",
             "sessions": [
               {
                 "endsAt": "2026-05-01T23:00:00+00:00",
-                "id": "051d2a5b-63c5-412e-b7d2-f676cc1bcc39",
+                "id": "4b46da0f-19ef-4f20-aa44-7754e2233470",
                 "startsAt": "2026-05-01T20:00:00+00:00"
               }
             ],
             "status": 1,
             "ticketTypes": [
               {
-                "id": "6b6dd30b-df33-4973-8a30-46390617be74",
-                "name": "Genel",
+                "id": "305f5570-c9f1-48a1-b9cf-09c0051ea933",
+                "name": "Standard",
                 "priceAmount": 450.0,
                 "totalQuantity": 1000
               }
             ],
-            "title": "Müzik Festivali",
-            "venue": "İstanbul"
+            "title": "Music Festival",
+            "venue": "Istanbul"
           },
           "contentType": "application/json",
           "encoded": false

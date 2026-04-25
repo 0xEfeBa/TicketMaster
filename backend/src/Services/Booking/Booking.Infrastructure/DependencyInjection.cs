@@ -24,17 +24,14 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<BookingDbContext>());
         services.AddScoped<IReservationRepository, ReservationRepository>();
 
-        // Idempotency (Redis)
-        services.AddDistributedMemoryCache(); // Geliştirme ortamı için bellek (Dockerda Real Redis'e bağlanmalıdır)
+        services.AddDistributedMemoryCache();
         services.AddTransient<IIdempotencyService, RedisIdempotencyService>();
 
-        // Correlation ID Propagation
         services.AddHttpContextAccessor();
         services.AddTransient<CorrelationIdDelegatingHandler>();
 
         services.AddTicketFlowMessaging();
 
-        // Catalog Servisine HTTP İstek atacak istemci (HttpClientFactory)
         var catalogBaseAddress = configuration["CatalogService:BaseAddress"] ?? "http://localhost:5002";
         services.AddHttpClient<ICatalogClient, CatalogHttpClient>(client =>
         {
@@ -42,7 +39,6 @@ public static class DependencyInjection
         })
         .AddHttpMessageHandler<CorrelationIdDelegatingHandler>();
 
-        // Kafka Background Consumer (Eventual Consistency Worker)
         services.AddHostedService<EventCancelledKafkaConsumer>();
 
         return services;

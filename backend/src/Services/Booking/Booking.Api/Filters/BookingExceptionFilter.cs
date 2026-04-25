@@ -11,7 +11,7 @@ public class BookingExceptionFilter : IExceptionFilter
         if (context.Exception is not DbUpdateConcurrencyException)
             return;
 
-        context.Result = new ObjectResult("Kayıt aynı anda güncellendi. Lütfen tekrar deneyin.")
+        context.Result = new ObjectResult("The record was updated concurrently. Please retry.")
         {
             StatusCode = StatusCodes.Status409Conflict
         };

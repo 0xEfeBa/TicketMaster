@@ -25,15 +25,14 @@ public class ReservationsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateHold([FromBody] CreateHoldRequest request, [FromHeader(Name = "Idempotency-Key")] string idempotencyKey, CancellationToken cancellationToken)
     {
-        // 1. Idempotency Check (Aynı anda ard arda çift tıklamayı önler)
         if (string.IsNullOrEmpty(idempotencyKey) || !Guid.TryParse(idempotencyKey, out var requestId))
         {
-            return BadRequest("Idempotency-Key header eksik veya geçersiz.");
+            return BadRequest("Idempotency-Key header is missing or invalid.");
         }
 
         if (await _idempotencyService.RequestExistsAsync(requestId))
         {
-            return Ok(new { Message = "İstek zaten işlendi." });
+            return Ok(new { Message = "Request was already processed." });
         }
 
         if (!User.TryGetUserId(out var userId)) return Unauthorized();
@@ -52,10 +51,10 @@ public class ReservationsController : ControllerBase
     public async Task<IActionResult> ConfirmReservation(Guid id, [FromHeader(Name = "Idempotency-Key")] string idempotencyKey, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(idempotencyKey) || !Guid.TryParse(idempotencyKey, out var requestId))
-            return BadRequest("Idempotency-Key header eksik veya geçersiz.");
+            return BadRequest("Idempotency-Key header is missing or invalid.");
 
         if (await _idempotencyService.RequestExistsAsync(requestId))
-            return Ok(new { Message = "Onaylama işlemi zaten işlendi." });
+            return Ok(new { Message = "Confirmation was already processed." });
 
         if (!User.TryGetUserId(out var userId)) return Unauthorized();
 
@@ -64,7 +63,7 @@ public class ReservationsController : ControllerBase
         
         await _idempotencyService.CreateRequestAsync(requestId, "ConfirmReservationCommand");
 
-        return Ok(new { Message = "Rezervasyon başarıyla onaylandı (Bilet kesildi)." });
+        return Ok(new { Message = "Reservation confirmed successfully." });
     }
 }
 

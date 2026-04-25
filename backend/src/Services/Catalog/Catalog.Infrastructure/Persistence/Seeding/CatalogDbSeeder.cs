@@ -13,22 +13,22 @@ public static class CatalogDbSeeder
 
         var @event = new Event(
             Guid.NewGuid(),
-            "Müthiş Rock Konseri",
-            "Şehrin en büyük açık hava konseri!",
-            "İstanbul Açık Hava Sahnesi",
+            "Rock Night Live",
+            "Open-air summer concert.",
+            "Istanbul Open-Air Stage",
             "https://picsum.photos/seed/rock/800/400",
             organizerId);
 
         @event.AddSession(Guid.NewGuid(), DateTimeOffset.UtcNow.AddDays(30), DateTimeOffset.UtcNow.AddDays(30).AddHours(3));
         @event.AddTicketType(Guid.NewGuid(), "VIP", 1500, 50);
-        @event.AddTicketType(Guid.NewGuid(), "Genel Alan", 500, 500);
+        @event.AddTicketType(Guid.NewGuid(), "General", 500, 500);
         @event.Publish();
 
         var @event2 = new Event(
             Guid.NewGuid(),
-            "Teknoloji Konferansı 2026",
-            "Geleceğin teknolojileri burada konuşuluyor.",
-            "Ankara Kongre Merkezi",
+            "Tech Conference 2026",
+            "Future of platform engineering.",
+            "Ankara Convention Center",
             "https://picsum.photos/seed/tech/800/400",
             organizerId);
 

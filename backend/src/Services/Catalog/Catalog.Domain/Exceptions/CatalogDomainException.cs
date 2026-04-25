@@ -2,9 +2,6 @@ namespace Catalog.Domain.Exceptions;
 
 public class CatalogDomainException : Exception
 {
-    /// <summary>
-    /// API katmanı 403 üretmek için (sahiplik / yetki).
-    /// </summary>
     public bool IsAccessDenied { get; }
 
     public CatalogDomainException(string message, bool isAccessDenied = false) : base(message)

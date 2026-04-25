@@ -4,7 +4,7 @@ public class Ticket
 {
     public Guid Id { get; private set; }
     public Guid ReservationId { get; private set; }
-    public Guid TicketTypeId { get; private set; } // Referans to Catalog
+    public Guid TicketTypeId { get; private set; }
     public decimal PriceAmount { get; private set; }
     public uint Version { get; private set; }
 

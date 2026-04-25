@@ -12,12 +12,10 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         
-        services.AddMediatR(cfg => 
+        services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            // Register behaviors
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-            // Add validation behavior here if created...
         });
 
         return services;

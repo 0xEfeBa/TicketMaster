@@ -6,12 +6,12 @@ namespace Booking.Domain.Entities;
 public class Reservation
 {
     public Guid Id { get; private set; }
-    public Guid UserId { get; private set; } // Identity'den (sub) olan kopya referans
-    public Guid EventId { get; private set; } // Catalog'dan referans
+    public Guid UserId { get; private set; }
+    public Guid EventId { get; private set; }
     public ReservationStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset ExpiresAtUtc { get; private set; }
-    public uint Version { get; private set; } // PG xmin optimizasyonu
+    public uint Version { get; private set; }
 
     private readonly List<Ticket> _tickets = new();
     public IReadOnlyCollection<Ticket> Tickets => _tickets.AsReadOnly();
@@ -32,16 +32,13 @@ public class Reservation
     {
         if (Status != ReservationStatus.Held)
         {
-            throw new BookingDomainException("Bilet sadece Held statüsündeki bir rezervasyona eklenebilir.");
+            throw new BookingDomainException("Tickets can only be added while the reservation is in Held status.");
         }
 
         var ticket = new Ticket(ticketId, Id, ticketTypeId, priceAmount);
         _tickets.Add(ticket);
     }
 
-    /// <summary>
-    /// Satın alma basamaklarında Hold süresi geçmiş mi diye On-The-Fly doğrulama yapar.
-    /// </summary>
     public bool IsExpired(DateTimeOffset now)
     {
         return Status == ReservationStatus.Held && ExpiresAtUtc < now;
@@ -51,17 +48,17 @@ public class Reservation
     {
         if (Status == ReservationStatus.Confirmed)
         {
-            throw new BookingDomainException("Rezervasyon zaten onaylanmış.");
+            throw new BookingDomainException("Reservation is already confirmed.");
         }
 
         if (Status == ReservationStatus.Cancelled)
         {
-            throw new BookingDomainException("İptal edilmiş bir rezervasyon onaylanamaz.");
+            throw new BookingDomainException("A cancelled reservation cannot be confirmed.");
         }
 
         if (IsExpired(now))
         {
-            throw new BookingDomainException("Bu rezervasyonun hold süresi (geçerlilik tarihi) dolmuş.");
+            throw new BookingDomainException("The hold period for this reservation has expired.");
         }
 
         Status = ReservationStatus.Confirmed;
@@ -77,8 +74,6 @@ public class Reservation
 
     public void InvalidateDueToEventCancellation()
     {
-        // Planda belirtildiği üzere: Etkinlik iptal edildiğinde rezervasyonu geçersiz kıl
         Status = ReservationStatus.Cancelled;
-        // İleride özel bir status (InvalidatedDueToEventCancellation) eklenecekse burası güncellenir.
     }
 }

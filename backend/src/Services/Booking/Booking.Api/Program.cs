@@ -17,7 +17,6 @@ builder.Services.AddControllers(options => options.Filters.Add(new BookingExcept
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// JWT Bearer config matches Identity & Catalog
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtSigningKey = builder.Configuration["Jwt:SigningKey"];

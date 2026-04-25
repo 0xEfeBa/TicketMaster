@@ -22,7 +22,7 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request, CancellationToken cancellationToken)
     {
         if (!User.TryGetUserId(out var organizerUserId))
-            return Unauthorized("Geçersiz kullanıcı kimliği.");
+            return Unauthorized("Invalid user identity.");
 
         var command = new CreateEventCommand(
             request.Title,

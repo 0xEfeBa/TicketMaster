@@ -13,7 +13,6 @@ using TicketFlow.BuildingBlocks.Web;
 var builder = WebApplication.CreateBuilder(args);
 builder.AddTicketFlowObservability("Catalog.Api");
 
-// Katmanları (Clean Architecture) DI Container'a kayıt etme
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -21,7 +20,6 @@ builder.Services.AddControllers(options => options.Filters.Add(new CatalogDomain
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Identity servisi ile tutarlı JWT Bearer entegrasyonu
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var jwtSigningKey = builder.Configuration["Jwt:SigningKey"];

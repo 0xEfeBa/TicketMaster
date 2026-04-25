@@ -19,10 +19,10 @@ public class AddTicketTypeCommandHandler : IRequestHandler<AddTicketTypeCommand,
     {
         var @event = await _eventRepository.GetByIdAsync(request.EventId, cancellationToken);
         if (@event is null)
-            throw new CatalogDomainException("Etkinlik bulunamadı.");
+            throw new CatalogDomainException("Event not found.");
 
         if (!request.RequestingUserIsAdmin && @event.OrganizerUserId != request.RequestingUserId)
-            throw new CatalogDomainException("Sadece etkinliğin sahibi veya Admin bilet ekleyebilir.", isAccessDenied: true);
+            throw new CatalogDomainException("Only the event owner or an Admin can add ticket types.", isAccessDenied: true);
 
         var newTicketTypeId = Guid.NewGuid();
         @event.AddTicketType(newTicketTypeId, request.Name, request.PriceAmount, request.TotalQuantity);

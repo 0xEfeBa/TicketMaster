@@ -11,7 +11,6 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.ToTable("Reservations");
         builder.HasKey(r => r.Id);
 
-        // Optimistic Locking Token mapping via PostgreSQL xmin
         builder.Property(r => r.Version).IsRowVersion();
 
         builder.HasMany(r => r.Tickets)

@@ -4,7 +4,7 @@ public class SimulationOptions
 {
     public int InitialDelaySeconds { get; set; } = 5;
     public int CycleDelaySeconds { get; set; } = 20;
-    public int MaxCycles { get; set; } = 1; // 0 => sonsuz
+    public int MaxCycles { get; set; } = 1;
 
     public string DefaultPassword { get; set; } = "Password123*";
 

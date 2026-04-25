@@ -38,7 +38,6 @@ public abstract class KafkaConsumerBase<T>(
 
         logger.LogInformation("Started listening for {EventName} on Kafka", typeof(T).Name);
 
-        // Ensure hosted service startup does not block web host startup.
         await Task.Yield();
 
         while (!stoppingToken.IsCancellationRequested)

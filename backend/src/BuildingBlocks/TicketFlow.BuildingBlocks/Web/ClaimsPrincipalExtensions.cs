@@ -13,7 +13,6 @@ public static class ClaimsPrincipalExtensions
         return !string.IsNullOrEmpty(s) && Guid.TryParse(s, out userId);
     }
 
-    /// <summary>Identity servisi tek rol: ClaimTypes.Role (enum string: Customer, Organizer, Admin).</summary>
     public static string? GetRoleName(this ClaimsPrincipal? user) =>
         user?.FindFirst(ClaimTypes.Role)?.Value;
 }

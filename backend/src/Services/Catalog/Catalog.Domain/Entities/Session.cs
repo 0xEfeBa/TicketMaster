@@ -7,7 +7,7 @@ public class Session
     public DateTimeOffset StartsAt { get; private set; }
     public DateTimeOffset? EndsAt { get; private set; }
 
-    private Session() { } // For EF Core
+    private Session() { }
 
     internal Session(Guid id, Guid eventId, DateTimeOffset startsAt, DateTimeOffset? endsAt)
     {

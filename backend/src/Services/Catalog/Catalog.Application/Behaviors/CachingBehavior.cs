@@ -17,14 +17,12 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        // 1. Önce geçersiz kılma mantığını kontrol et
         if (request is ICacheInvalidatorRequest<TResponse> invalidator)
         {
             foreach (var key in invalidator.CacheKeysToRemove)
                 await _cache.RemoveAsync(key, cancellationToken);
         }
 
-        // 2. Ardından cachelenebilir istek mi kontrol et
         if (request is not ICacheableRequest<TResponse> cacheableRequest)
         {
             return await next();
@@ -49,7 +47,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         }
         else
         {
-            options.SetAbsoluteExpiration(TimeSpan.FromMinutes(10)); // Default expiration
+            options.SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
         }
 
         var responseBytes = JsonSerializer.SerializeToUtf8Bytes(response);

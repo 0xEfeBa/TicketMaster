@@ -21,7 +21,6 @@ public class RedisIdempotencyService : IIdempotencyService
 
     public async Task CreateRequestAsync(Guid requestId, string name)
     {
-        // Aynı GUID istek gelmesin diye 7 gün boyunca Redis'te kaydını kilitleriz.
         await _cache.SetStringAsync(Prefix + requestId.ToString(), name, new DistributedCacheEntryOptions {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
         });

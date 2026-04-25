@@ -1,8 +1,5 @@
-# VPS / demoda stabil çalıştırma: taban yığın + yeniden başlatma politikaları
-#
-#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-#
-# Sırlar: .env (POSTGRES_PASSWORD, REDIS_PASSWORD, KAFKA_*, Seq parolası) aynen gerekir.
+# Overlay: restart policies. Run: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Requires .env (same as base compose).
 
 name: ticketflow
 

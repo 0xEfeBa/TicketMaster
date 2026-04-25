@@ -12,7 +12,6 @@ public class GetEventsQueryHandler : IRequestHandler<GetEventsQuery, List<EventD
         _eventRepository = eventRepository;
     }
 
-    // Handler içerisine Redis kodları SIZDIRILMAZ.
     public async Task<List<EventDto>> Handle(GetEventsQuery request, CancellationToken cancellationToken)
     {
         var rawEvents = await _eventRepository.GetPublishedEventsAsync(request.Page, request.PageSize, cancellationToken);

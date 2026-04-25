@@ -4,9 +4,6 @@ using Xunit;
 
 namespace TicketFlow.ContractTests;
 
-/// <summary>
-/// Catalog GET /api/v1/events/{id} yanıtı, GetEventById EventDetailDto ile aynı alan isimleri ve enum (status) değerleriyle hizalanır.
-/// </summary>
 public class BookingToCatalogContractTests
 {
     private readonly IPactBuilderV4 _pactBuilder;
@@ -38,9 +35,9 @@ public class BookingToCatalogContractTests
                 .WithJsonBody(new
                 {
                     id = eventId,
-                    title = "Müzik Festivali",
-                    description = "Örnek açıklama",
-                    venue = "İstanbul",
+                    title = "Music Festival",
+                    description = "Sample description",
+                    venue = "Istanbul",
                     imageUrl = (string?)null,
                     status = 1,
                     organizerUserId,
@@ -50,7 +47,7 @@ public class BookingToCatalogContractTests
                     },
                     ticketTypes = new[]
                     {
-                        new { id = ticketTypeId, name = "Genel", priceAmount = 450.00m, totalQuantity = 1000 }
+                        new { id = ticketTypeId, name = "Standard", priceAmount = 450.00m, totalQuantity = 1000 }
                     }
                 });
 

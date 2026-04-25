@@ -39,7 +39,6 @@ public class OutboxProcessor<TContext>(
                 {
                     try
                     {
-                        // Mesajı tipine göre deserialize et ve Kafka'ya gönder
                         var eventType = Type.GetType(message.Type);
                         if (eventType == null)
                         {

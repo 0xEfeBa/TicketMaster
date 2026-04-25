@@ -19,21 +19,18 @@ public class ConfirmReservationCommandHandler : IRequestHandler<ConfirmReservati
     {
         var reservation = await _reservationRepository.GetByIdAsync(request.ReservationId, cancellationToken);
         if (reservation is null)
-            throw new BookingDomainException("Rezervasyon bulunamadı.");
+            throw new BookingDomainException("Reservation not found.");
 
-        // Yetki kontrolü (Sadece rezerve eden edebilir)
         if (reservation.UserId != request.UserId)
-            throw new BookingDomainException("Sadece rezervasyon sahibi işlemi yapabilir.");
+            throw new BookingDomainException("Only the reservation owner can perform this action.");
 
         var now = DateTimeOffset.UtcNow;
         if (reservation.IsExpired(now))
-            throw new BookingDomainException("Bu işlem için tanınan süre dolmuştur (Hold Süresi Bitti).");
+            throw new BookingDomainException("The allowed time for this operation has expired (hold ended).");
 
         reservation.Confirm(now);
         _reservationRepository.Update(reservation);
 
-        // Optimistic locking (RowVersion/xmin) bu save noktasında otomatik devreye girer.
-        // Eğer aynı reservation'u/kaydı birden fazla kişi confirm(güncelleme) atmaya çalışırsa RowVersion koruyacaktır.
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

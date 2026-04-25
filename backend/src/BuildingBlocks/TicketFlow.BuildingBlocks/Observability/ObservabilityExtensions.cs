@@ -12,7 +12,6 @@ public static class ObservabilityExtensions
 {
     public static WebApplicationBuilder AddTicketFlowObservability(this WebApplicationBuilder builder, string serviceName)
     {
-        // 1. Serilog ile Merkezi Loglama (Seq) Configürasyonu
         builder.Host.UseSerilog((context, services, configuration) => configuration
             .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
@@ -21,7 +20,6 @@ public static class ObservabilityExtensions
             .WriteTo.Console()
             .WriteTo.Seq(context.Configuration["Seq:ServerUrl"] ?? "http://localhost:5341"));
 
-        // 2. OpenTelemetry ile Distributed Tracing (Jaeger) Configürasyonu
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource => resource.AddService(serviceName))
             .WithTracing(tracing =>

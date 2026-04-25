@@ -1,8 +1,5 @@
 namespace Catalog.Application.Abstractions.Caching;
 
-/// <summary>
-/// Yayın/iptal sonrası detay + yayın listesi (ilk sayfalar) tutarlılığı.
-/// </summary>
 public static class EventCacheKeys
 {
     public static IReadOnlyList<string> ForPublishOrCancel(Guid eventId)

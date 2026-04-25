@@ -12,11 +12,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            // Idempotency behavior eklenecek
-        });
+        services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()); });
 
         services.AddScoped<IIntegrationEventHandler<EventCancelledIntegrationEvent>, EventCancelledIntegrationEventHandler>();
 

@@ -23,7 +23,6 @@ public static class DependencyInjection
         services.AddTicketFlowMessaging();
         services.AddTicketFlowOutbox<CatalogDbContext>();
 
-        // Redis setup
         var redisConnStr = configuration.GetConnectionString("Redis");
         if (!string.IsNullOrEmpty(redisConnStr))
         {
@@ -35,7 +34,6 @@ public static class DependencyInjection
         }
         else
         {
-            // Dev environment fallback
             services.AddDistributedMemoryCache();
         }
 

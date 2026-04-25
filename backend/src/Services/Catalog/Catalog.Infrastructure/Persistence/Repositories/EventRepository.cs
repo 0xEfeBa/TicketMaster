@@ -51,8 +51,6 @@ public class EventRepository : IEventRepository
             _context.Entry(@event).State = EntityState.Modified;
         }
 
-        // Aggregate icinde yeni eklenen ticket type nesneleri bazen Added yerine Modified algilanabiliyor.
-        // Bu durumda sadece DB'de kaydi olmayanlari Added'a cekiyoruz.
         foreach (var ticketType in @event.TicketTypes)
         {
             var ttEntry = _context.Entry(ticketType);

@@ -21,20 +21,19 @@ public class CatalogHttpClient : ICatalogClient
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/v1/events/{eventId}");
             if (!string.IsNullOrEmpty(bearerToken))
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken); // Kullanıcının Auth Tokenı aynen iletiliyor (Forwarding)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 
             var response = await _client.SendAsync(request, cancellationToken);
             if (!response.IsSuccessStatusCode)
-                return new ValidateTicketTypeResult(false, 0, $"Katalog servisine ulaşılamadı (Status: {response.StatusCode}).");
+                return new ValidateTicketTypeResult(false, 0, $"Catalog service returned {(int)response.StatusCode} {response.StatusCode}.");
 
-            // TODO: JSON'dan Deserialization (Etkinliğin ve biletin varlığını kontrol et, fiyatı al). 
-            // MVP simülasyonu için 100₺ atanmıştır:
+            // TODO: deserialize event JSON; validate ticket type and read price
             return new ValidateTicketTypeResult(true, 100m, string.Empty);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Katalog ile iletişimde hata oluştu.");
-            return new ValidateTicketTypeResult(false, 0, "Katalog entegrasyonu iletişim hatası.");
+            _logger.LogError(ex, "Error calling catalog service.");
+            return new ValidateTicketTypeResult(false, 0, "Catalog integration error.");
         }
     }
 }

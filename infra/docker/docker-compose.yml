@@ -1,10 +1,5 @@
-# TicketFlow yerel altyapı — PostgreSQL, Redis (parolalı), Kafka KRaft (Bitnami legacy imaj, SASL/PLAIN).
-# Not: docker.io/bitnami/kafka etiketleri Hub'dan kalktı; yerine bitnamilegacy/kafka sabit tag.
-# İlk kurulum: cp .env.example .env — tüm sırlar tek dosyada (POSTGRES, REDIS, Kafka SASL, vb.).
-# Redis parolası: .env içinde REDIS_PASSWORD (Compose komut satırında kullanılır).
-#
-# Apache Kafka imajından geçiş: eski volume uyumsuz → bir kez:
-#   docker compose down -v && docker compose up -d
+# Local stack: Postgres, Redis, Kafka (KRaft), Seq, Jaeger, apps. Copy infra/docker/.env from .env.example.
+# Kafka: bitnamilegacy/kafka (pinned). Image/volume change: docker compose down -v && docker compose up -d
 
 name: ticketflow
 

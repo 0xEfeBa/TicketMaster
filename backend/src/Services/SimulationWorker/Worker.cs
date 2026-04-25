@@ -69,14 +69,14 @@ public class Worker(
         var adminToken = await LoginAsync(client, _options.AdminEmail, _options.AdminPassword, report, "admin-login", ct);
         if (string.IsNullOrWhiteSpace(adminToken))
         {
-            logger.LogWarning("Admin login başarısız. Cycle burada durduruldu.");
+            logger.LogWarning("Admin login failed. Cycle stopped.");
             return;
         }
 
         var target = await ResolveBookableEventAsync(client, report, ct);
         if (target is null)
         {
-            logger.LogWarning("Bookable published event bulunamadı. Cycle durduruldu.");
+            logger.LogWarning("No bookable published event found. Cycle stopped.");
             return;
         }
         var targetEventId = target.Value.EventId;
@@ -92,7 +92,7 @@ public class Worker(
         var customer = await RegisterAndLoginAsync(client, "customer", report, ct);
         if (customer is null)
         {
-            logger.LogWarning("Customer flow başlatılamadı.");
+            logger.LogWarning("Customer flow could not start.");
             return;
         }
 
@@ -203,7 +203,6 @@ public class Worker(
                 report,
                 ct);
 
-            // Beklenen negatif test: session yoksa publish 400 olmalı.
             var publishRes = await SendAsync(
                 client,
                 HttpMethod.Post,
@@ -215,7 +214,7 @@ public class Worker(
                 report,
                 ct);
             if ((int)publishRes.StatusCode >= 500)
-                logger.LogWarning("Organizer publish beklenmedik 5xx döndü: {Status}", (int)publishRes.StatusCode);
+                logger.LogWarning("Organizer publish returned unexpected 5xx: {Status}", (int)publishRes.StatusCode);
 
             var cancelCreatedByAdmin = await SendAsync(
                 client,
@@ -249,7 +248,6 @@ public class Worker(
         CycleReport report,
         CancellationToken ct)
     {
-        // pageSize=10 cache invalidation anahtarlarıyla hizalıdır.
         var events = await GetEventsAsync(client, report, ct);
         if (events.Count == 0)
             return null;

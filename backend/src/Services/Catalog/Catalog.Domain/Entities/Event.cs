@@ -13,7 +13,7 @@ public class Event
     public EventStatus Status { get; private set; }
     public Guid OrganizerUserId { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
-    public uint Version { get; private set; } // Used for xmin optimistic concurrency in PostgreSQL
+    public uint Version { get; private set; }
 
     private readonly List<Session> _sessions = new();
     public IReadOnlyCollection<Session> Sessions => _sessions.AsReadOnly();
@@ -21,7 +21,7 @@ public class Event
     private readonly List<TicketType> _ticketTypes = new();
     public IReadOnlyCollection<TicketType> TicketTypes => _ticketTypes.AsReadOnly();
 
-    private Event() { } // For EF Core
+    private Event() { }
 
     public Event(Guid id, string title, string description, string venue, string? imageUrl, Guid organizerUserId)
     {
@@ -46,13 +46,13 @@ public class Event
     public void Publish()
     {
         if (Status == EventStatus.Published)
-            throw new CatalogDomainException("Etkinlik zaten yayında.");
+            throw new CatalogDomainException("Event is already published.");
 
         if (!_sessions.Any())
-            throw new CatalogDomainException("Yayınlamak için en az bir seans olmalıdır.");
+            throw new CatalogDomainException("At least one session is required to publish.");
 
         if (!_ticketTypes.Any())
-            throw new CatalogDomainException("Yayınlamak için en az bir bilet türü olmalıdır.");
+            throw new CatalogDomainException("At least one ticket type is required to publish.");
 
         Status = EventStatus.Published;
     }
@@ -68,7 +68,7 @@ public class Event
     public void AddSession(Guid id, DateTimeOffset startsAt, DateTimeOffset? endsAt)
     {
         if (endsAt.HasValue && endsAt.Value <= startsAt)
-            throw new CatalogDomainException("Bitiş tarihi başlangıç tarihinden önce olamaz.");
+            throw new CatalogDomainException("End time cannot be before start time.");
 
         var session = new Session(id, Id, startsAt, endsAt);
         _sessions.Add(session);
@@ -84,10 +84,10 @@ public class Event
     public void AddTicketType(Guid id, string name, decimal priceAmount, int totalQuantity)
     {
         if (priceAmount < 0)
-            throw new CatalogDomainException("Bilet fiyatı 0'dan küçük olamaz.");
+            throw new CatalogDomainException("Ticket price cannot be negative.");
             
         if (totalQuantity <= 0)
-            throw new CatalogDomainException("Bilet miktarı 0'dan büyük olmalıdır.");
+            throw new CatalogDomainException("Ticket quantity must be greater than zero.");
 
         var ticketType = new TicketType(id, Id, name, priceAmount, totalQuantity);
         _ticketTypes.Add(ticketType);

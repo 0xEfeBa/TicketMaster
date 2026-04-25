@@ -11,7 +11,7 @@ public class CatalogDomainExceptionFilter : IExceptionFilter
     {
         if (context.Exception is DbUpdateConcurrencyException)
         {
-            context.Result = new ObjectResult("Kayit ayni anda guncellendi. Lutfen islemi tekrar deneyin.")
+            context.Result = new ObjectResult("The record was updated concurrently. Please retry.")
             {
                 StatusCode = StatusCodes.Status409Conflict
             };
