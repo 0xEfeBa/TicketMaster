@@ -1,0 +1,48 @@
+# Ortam ve sırlar (asla commit etme: gerçek .env, üretim parolaları)
+.env
+**/.env
+!**/.env.example
+**/*.pfx
+**/*.pem
+**/Properties/secrets.json
+
+# Docker / lokal yamalar (opsiyonel — kişisel override’lar)
+docker-compose.override.yml
+**/docker-compose.override.yml
+*.envrc
+
+# .NET
+**/bin/
+**/obj/
+**/out/
+backend/logs/
+*.user
+*.userosscache
+*.suo
+*.cache
+.vs/
+.idea/
+
+# Test / kapsam
+TestResults/
+coverage/
+*.trx
+*.coverage
+
+# Node (ileride apps/)
+node_modules/
+dist/
+.expo/
+
+# Log ve geçici
+*.log
+tmp/
+temp/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Yalnızca kod + çalıştırma zorunluları push: doküman ve shell script repoya alınmaz
+*.md
+**/*.sh

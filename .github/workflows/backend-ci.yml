@@ -1,0 +1,57 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  dotnet:
+    name: Restore Build Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore TicketFlow.sln
+
+      - name: Build
+        run: dotnet build TicketFlow.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test TicketFlow.sln --no-build --configuration Release
+
+  docker:
+    name: Compose Build
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_PASSWORD: ci-postgres-password
+      REDIS_PASSWORD: ci-redis-password
+      KAFKA_CLIENT_USERS: ci-user
+      KAFKA_CLIENT_PASSWORDS: ci-password
+      SEQ_ADMIN_PASSWORD: ci-seq-admin-password
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate compose
+        run: docker compose -f infra/docker/docker-compose.yml config
+
+      - name: Build service images
+        run: >
+          docker compose -f infra/docker/docker-compose.yml build
+          gateway
+          identity-service
+          catalog-service
+          booking-service
+          simulation-worker

@@ -1,0 +1,20 @@
+services:
+  gateway:
+    environment:
+      - RateLimiting__PermitLimit=2000
+      - RateLimiting__QueueLimit=2000
+      - RateLimiting__FixedWindowSeconds=10
+
+  identity-service:
+    environment:
+      - Redis__RegisterRequestsPerMinute=5000
+      - Redis__LoginRequestsPerMinute=5000
+
+  simulation-worker:
+    environment:
+      - Simulation__EnableLoadScenario=true
+      - Simulation__LoadUsers=500
+      - Simulation__LoadBatchSize=20
+      - Simulation__LoadParallelism=10
+      - Simulation__LoadBatchPauseSeconds=10
+      - Simulation__LoadRegisterRetryCount=3

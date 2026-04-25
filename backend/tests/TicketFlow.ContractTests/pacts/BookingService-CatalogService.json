@@ -1,0 +1,69 @@
+{
+  "consumer": {
+    "name": "BookingService"
+  },
+  "interactions": [
+    {
+      "description": "A GET request to retrieve an event",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "An event exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/v1/events/249ac052-2c61-4d78-9651-45479b90681c"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "description": "Örnek açıklama",
+            "id": "249ac052-2c61-4d78-9651-45479b90681c",
+            "imageUrl": null,
+            "organizerUserId": "c5b6919e-965c-4be7-8800-060da887914d",
+            "sessions": [
+              {
+                "endsAt": "2026-05-01T23:00:00+00:00",
+                "id": "051d2a5b-63c5-412e-b7d2-f676cc1bcc39",
+                "startsAt": "2026-05-01T20:00:00+00:00"
+              }
+            ],
+            "status": 1,
+            "ticketTypes": [
+              {
+                "id": "6b6dd30b-df33-4973-8a30-46390617be74",
+                "name": "Genel",
+                "priceAmount": 450.0,
+                "totalQuantity": 1000
+              }
+            ],
+            "title": "Müzik Festivali",
+            "venue": "İstanbul"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pactRust": {
+      "ffi": "0.4.23",
+      "models": "1.2.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "CatalogService"
+  }
+}

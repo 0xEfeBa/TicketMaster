@@ -1,0 +1,29 @@
+# VPS / demoda stabil çalıştırma: taban yığın + yeniden başlatma politikaları
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Sırlar: .env (POSTGRES_PASSWORD, REDIS_PASSWORD, KAFKA_*, Seq parolası) aynen gerekir.
+
+name: ticketflow
+
+services:
+  postgres:
+    restart: unless-stopped
+  redis:
+    restart: unless-stopped
+  kafka:
+    restart: unless-stopped
+  seq:
+    restart: unless-stopped
+  jaeger:
+    restart: unless-stopped
+  identity-service:
+    restart: unless-stopped
+  catalog-service:
+    restart: unless-stopped
+  booking-service:
+    restart: unless-stopped
+  gateway:
+    restart: unless-stopped
+  simulation-worker:
+    restart: unless-stopped
