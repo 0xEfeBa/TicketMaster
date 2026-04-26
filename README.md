@@ -1,1 +1,1 @@
-<img width="609" height="531" alt="Ekran Resmi 2026-04-26 15 36 54" src="https://github.com/user-attachments/assets/cfff66d0-c5b2-4be0-8858-228e2bd013c9" />
+<img width="769" height="517" alt="Ekran Resmi 2026-04-26 18 16 12" src="https://github.com/user-attachments/assets/a7c498a1-ce07-45a8-9fd7-e078ef4c38ac" />
