@@ -13,26 +13,26 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/api/v1/events/c39cdb81-8e30-421d-80cc-40401a2240d4"
+        "path": "/api/v1/events/0b80c924-d9de-45f7-8710-118ecb06c8ae"
       },
       "response": {
         "body": {
           "content": {
             "description": "Sample description",
-            "id": "c39cdb81-8e30-421d-80cc-40401a2240d4",
+            "id": "0b80c924-d9de-45f7-8710-118ecb06c8ae",
             "imageUrl": null,
-            "organizerUserId": "afdf0af9-19ec-4d5e-9e51-45af51eb1db8",
+            "organizerUserId": "6866bb22-a511-4b88-8e56-dd7e63c8cdc3",
             "sessions": [
               {
                 "endsAt": "2026-05-01T23:00:00+00:00",
-                "id": "4b46da0f-19ef-4f20-aa44-7754e2233470",
+                "id": "656ca394-9f3b-463d-8168-a13d9d0ec1f3",
                 "startsAt": "2026-05-01T20:00:00+00:00"
               }
             ],
             "status": 1,
             "ticketTypes": [
               {
-                "id": "305f5570-c9f1-48a1-b9cf-09c0051ea933",
+                "id": "e90e2647-1b28-42cf-919f-b5d9cd20d171",
                 "name": "Standard",
                 "priceAmount": 450.0,
                 "totalQuantity": 1000

@@ -567,7 +567,7 @@ public class Worker(
         var totalFail = rows.Sum(r => r.Fail);
         var totalRequests = totalSuccess + totalFail;
 
-        logger.LogInformation("=================================================");
+                logger.LogInformation("=================================================");
         logger.LogInformation("SIMULATION CYCLE #{Cycle} SUMMARY", report.CycleNo);
         logger.LogInformation("TotalRequests={TotalRequests} Success={Success} Fail={Fail}", totalRequests, totalSuccess, totalFail);
 
@@ -581,7 +581,7 @@ public class Worker(
                 "Endpoint={Endpoint} ok={Ok} fail={Fail} avgMs={Avg:F1} p95Ms={P95} statuses=[{Statuses}]",
                 row.Endpoint, row.Success, row.Fail, avg, p95, statuses);
         }
-        logger.LogInformation("=================================================");
+                logger.LogInformation("=================================================");
     }
 
     private static long Percentile(List<long> values, double percentile)

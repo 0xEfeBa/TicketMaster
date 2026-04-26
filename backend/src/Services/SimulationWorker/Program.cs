@@ -1,6 +1,20 @@
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using TicketFlow.SimulationWorker;
 
 var builder = Host.CreateApplicationBuilder(args);
+
+const string serviceName = "TicketFlow.SimulationWorker";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService(serviceName))
+    .WithTracing(tracing =>
+    {
+        tracing
+            .SetSampler(new AlwaysOnSampler())
+            .AddHttpClientInstrumentation()
+            .AddOtlpExporter(options => OtlpExporterConfiguration.Apply(options, builder.Configuration));
+    });
 
 var gatewayUri = new Uri(builder.Configuration["ApiGateway:BaseAddress"] ?? "http://gateway:8080");
 

@@ -1,18 +1,12 @@
 using System;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Exporter;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using Serilog;
 
-namespace TicketFlow.BuildingBlocks.Observability;
+namespace TicketFlow.SimulationWorker;
 
-public static class ObservabilityExtensions
+internal static class OtlpExporterConfiguration
 {
-    private static void ApplyOtlpTraceExporterOptions(OtlpExporterOptions options, IConfiguration configuration)
+    public static void Apply(OtlpExporterOptions options, IConfiguration configuration)
     {
         var raw = configuration["OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"]
             ?? configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
@@ -52,29 +46,5 @@ public static class ObservabilityExtensions
                 return OtlpExportProtocol.HttpProtobuf;
         }
         return port == 4318 ? OtlpExportProtocol.HttpProtobuf : OtlpExportProtocol.Grpc;
-    }
-
-    public static WebApplicationBuilder AddTicketFlowObservability(this WebApplicationBuilder builder, string serviceName)
-    {
-        builder.Host.UseSerilog((context, services, configuration) => configuration
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services)
-            .Enrich.FromLogContext()
-            .Enrich.WithProperty("Service", serviceName)
-            .WriteTo.Console()
-            .WriteTo.Seq(context.Configuration["Seq:ServerUrl"] ?? "http://localhost:5341"));
-
-        builder.Services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(serviceName))
-            .WithTracing(tracing =>
-            {
-                tracing
-                    .SetSampler(new AlwaysOnSampler())
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddOtlpExporter(options => ApplyOtlpTraceExporterOptions(options, builder.Configuration));
-            });
-
-        return builder;
     }
 }
